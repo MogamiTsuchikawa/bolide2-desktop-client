@@ -14,4 +14,7 @@ contextBridge.exposeInMainWorld("electron", {
     handler: (event: IpcRendererEvent, ...args: any[]) => void
   ) => ipcRenderer.removeListener("message", handler),
   exitApp: () => ipcRenderer.send("message", { type: "exit" }),
+  backToSetting: () => ipcRenderer.send("message", { type: "backToSetting" }),
+  startFlowText: (option: FlowTextOption) =>
+    ipcRenderer.send("message", { type: "startFlowText", payload: option }),
 });

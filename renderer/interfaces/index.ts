@@ -13,6 +13,8 @@ declare global {
       receiveHello: (handler: (event, args) => void) => void;
       stopReceivingHello: (handler: (event, args) => void) => void;
       exitApp: () => void;
+      backToSetting: () => void;
+      startFlowText: (option: FlowTextOption) => void;
     };
   }
 }
@@ -20,4 +22,9 @@ declare global {
 export type User = {
   id: number;
   name: string;
+};
+export type FlowTextOption = {
+  fontSize: number;
+  fontColors: string[];
+  flowAreas: number[];
 };

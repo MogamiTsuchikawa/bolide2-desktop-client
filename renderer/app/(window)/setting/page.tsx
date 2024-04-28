@@ -21,6 +21,13 @@ const SettingPage = () => {
   const onClickExit = () => {
     window.electron.exitApp();
   };
+  const onClickStart = () => {
+    window.electron.startFlowText({
+      fontSize: 300,
+      fontColors: ["red", "blue"],
+      flowAreas: [1, 2, 3, 4, 5],
+    });
+  };
   return (
     <WindowComponent title="Setting" onClose={onClickExit}>
       <section className="tabs w-full">
@@ -81,7 +88,7 @@ const SettingPage = () => {
       <div className="flex justify-end w-full">
         <div className="justify-end ">
           <button onClick={onClickExit}>終了</button>
-          <button onClick={onClickExit} className="ml-2">
+          <button onClick={onClickStart} className="ml-2">
             スタート
           </button>
         </div>

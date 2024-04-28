@@ -13,3 +13,12 @@ type Message = {
   type: string;
   payload: any;
 };
+
+type FlowTextMessage = Message & {
+  payload: FlowTextOption;
+};
+type FlowTextOption = {
+  fontSize: number;
+  fontColors: string[];
+  flowAreas: number[];
+};
