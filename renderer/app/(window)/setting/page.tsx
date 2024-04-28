@@ -2,6 +2,7 @@
 import { useState } from "react";
 import WindowComponent from "../../../components/window/window";
 import AppInfo from "../../../components/setting/app-info";
+import Connection from "../../../components/setting/connection";
 
 const tabList: {
   name: "room" | "text-position-speed" | "text-color-size" | "app-info";
@@ -41,7 +42,7 @@ const SettingPage = () => {
           hidden={selectedTab !== "room"}
           className="min-h-[500px]"
         >
-          <h3>ルーム設定</h3>
+          <Connection />
         </article>
         <article
           role="tabpanel"
