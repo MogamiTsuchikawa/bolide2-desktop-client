@@ -12,6 +12,7 @@ declare global {
       sayHello: () => void;
       receiveHello: (handler: (event, args) => void) => void;
       stopReceivingHello: (handler: (event, args) => void) => void;
+      exitApp: () => void;
     };
   }
 }

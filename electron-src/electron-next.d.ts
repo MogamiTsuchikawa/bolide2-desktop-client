@@ -6,6 +6,10 @@ declare module "electron-next" {
 
   export default function (
     directories: Directories | string,
-    port?: number,
+    port?: number
   ): Promise<void>;
 }
+type Message = {
+  type: string;
+  payload: any;
+};
