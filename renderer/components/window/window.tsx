@@ -10,7 +10,7 @@ const WindowComponent = ({ title, children, onClose }: WindowProps) => {
   return (
     <div className="window active">
       <div className="title-bar">
-        <div className="title-bar-text">{title}</div>
+        <div className="title-bar-text">{`bolide2 - ${title}`}</div>
         <div className="title-bar-controls">
           {onClose && <button aria-label="Close" onClick={onClose}></button>}
         </div>
