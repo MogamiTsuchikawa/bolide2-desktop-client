@@ -14,6 +14,7 @@ if (isMac) {
 
 let settingWindow: BrowserWindow | null = null;
 let flowTextWindow: BrowserWindow | null = null;
+let webSocket: WebSocket | null = null;
 
 // Prepare the renderer once the app is ready
 app.on("ready", async () => {
@@ -43,7 +44,27 @@ app.on("ready", async () => {
 
 const openFlowTextWindow = (option: FlowTextOption) => {
   settingWindow?.hide();
-
+  if (!option.testMode) {
+    webSocket = new WebSocket("wss://bolide.digicre.net/api/v1/room/test");
+    webSocket.onopen = () => {
+      console.log("WebSocket connected");
+      setInterval(() => {
+        webSocket?.send("ping");
+      }, 1000);
+    };
+    webSocket.onmessage = (event) => {
+      if (flowTextWindow) {
+        console.log(event.data);
+        flowTextWindow.webContents.send("message-from-websocket", event.data);
+      }
+    };
+    webSocket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+    webSocket.onclose = () => {
+      console.log("WebSocket disconnected");
+    };
+  }
   flowTextWindow = new BrowserWindow({
     transparent: true,
     frame: false,
@@ -87,6 +108,7 @@ ipcMain.on("message", (event: IpcMainEvent, anyMessage: any) => {
   const message = anyMessage as Message;
   switch (message.type) {
     case "exit":
+      webSocket?.close();
       app.quit();
       break;
     case "startFlowText":
@@ -97,6 +119,10 @@ ipcMain.on("message", (event: IpcMainEvent, anyMessage: any) => {
     case "backToSetting":
       flowTextWindow?.close();
       settingWindow?.show();
+      break;
+    case "error":
+      console.log("ERROR");
+      console.error(anyMessage.payload);
       break;
   }
   console.log(event);

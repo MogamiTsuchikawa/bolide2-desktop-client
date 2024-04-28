@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 type FlowText = {
   id: string;
@@ -57,6 +57,17 @@ const FlowTextPage = () => {
       window.electron.backToSetting();
     }, 10000);
   }, []);
+  useEffect(() => {
+    const removeListener = window.electron.receiveMessage((data) => {
+      const wsData = JSON.parse(data);
+      const newFlowText = genFlowText(wsData.comment);
+      setFlowTexts([...flowTexts, newFlowText]);
+    });
+    return () => {
+      removeListener();
+    };
+  }, [flowTexts]);
+
   return (
     <div // キーを更新することでアニメーションをリセット
       style={{
@@ -68,21 +79,43 @@ const FlowTextPage = () => {
     >
       <div style={{ height: `${windowHight}px` }}></div>
       {flowTexts.map((flowText) => (
-        <div key={flowText.id}>
-          <div
-            style={{
-              position: "absolute",
-              left: "100%",
-              top: `${flowText.line}%`,
-              animation: `flow-text-${flowText.id} 10s linear`,
-              fontSize: `${fontSize}px`,
-              color: flowText.color,
-              fontWeight: "bold",
-            }}
-          >
-            {windowHight + flowText.text}
-          </div>
-          <style>{`
+        <AnimationText
+          flowText={flowText}
+          fontSize={fontSize}
+          windowWidth={windowWidth}
+          key={flowText.id}
+        />
+      ))}
+    </div>
+  );
+};
+
+export default FlowTextPage;
+
+type AnimationTextProps = {
+  flowText: FlowText;
+  fontSize: number;
+  windowWidth: number;
+};
+const AnimationText = memo(
+  ({ flowText, fontSize, windowWidth }: AnimationTextProps) => {
+    console.log(`renderd:${flowText.id}`);
+    return (
+      <div key={flowText.id}>
+        <div
+          style={{
+            position: "absolute",
+            left: "100%",
+            top: `${flowText.line}%`,
+            animation: `flow-text-${flowText.id} 10s linear`,
+            fontSize: `${fontSize}px`,
+            color: flowText.color,
+            fontWeight: "bold",
+          }}
+        >
+          {flowText.text}
+        </div>
+        <style>{`
         @keyframes flow-text-${flowText.id} {
           from {
             transform: translateX(0);
@@ -92,10 +125,11 @@ const FlowTextPage = () => {
           }
         }
       `}</style>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-export default FlowTextPage;
+      </div>
+    );
+  },
+  (prev, currnt) =>
+    prev.flowText.id === currnt.flowText.id &&
+    prev.windowWidth === currnt.windowWidth &&
+    prev.fontSize === currnt.fontSize
+);

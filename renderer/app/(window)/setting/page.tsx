@@ -26,7 +26,7 @@ const SettingPage = () => {
       fontSize: 100,
       fontColors: ["red", "blue", "green", "yellow", "purple", "pink"],
       flowAreas: [0, 10, 20, 30, 40, 50, 60, 70, 80],
-      testMode: true,
+      testMode: false,
     });
   };
   return (

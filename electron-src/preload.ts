@@ -17,4 +17,13 @@ contextBridge.exposeInMainWorld("electron", {
   backToSetting: () => ipcRenderer.send("message", { type: "backToSetting" }),
   startFlowText: (option: FlowTextOption) =>
     ipcRenderer.send("message", { type: "startFlowText", payload: option }),
+  receiveMessage: (func: any) => {
+    ipcRenderer.on("message-from-websocket", (event, ...args) => {
+      console.log(event);
+      func(args);
+    });
+    return () => ipcRenderer.removeListener("message-from-websocket", func);
+  },
+  sendError: (error: any) =>
+    ipcRenderer.send("message", { type: "error", payload: error }),
 });

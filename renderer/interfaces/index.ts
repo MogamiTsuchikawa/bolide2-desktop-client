@@ -15,6 +15,8 @@ declare global {
       exitApp: () => void;
       backToSetting: () => void;
       startFlowText: (option: FlowTextOption) => void;
+      sendError: (error: any) => void;
+      receiveMessage: (listener: (message: string) => void) => () => void;
     };
   }
 }
