@@ -1,4 +1,4 @@
-import "../../global.css";
+import "../../global.scss";
 import "7.css/dist/7.scoped.css";
 
 export const metadata = {
