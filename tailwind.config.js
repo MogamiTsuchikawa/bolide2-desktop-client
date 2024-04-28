@@ -2,7 +2,10 @@
 module.exports = {
   mode: "jit",
   darkMode: false,
-  content: [],
+  content: [
+    "./renderer/app/**/*.{js,jsx,ts,tsx}",
+    "./renderer/components/**/*.{js,jsx,ts,tsx}",
+  ],
   theme: {
     extend: {},
   },
