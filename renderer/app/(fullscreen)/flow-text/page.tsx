@@ -1,72 +1,99 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FlowTextOption } from "../../../interfaces";
 import { useSearchParams } from "next/navigation";
+type FlowText = {
+  id: string;
+  text: string;
+  color: string;
+  line: number;
+};
 
 const FlowTextPage = () => {
-  const [option, setOption] = useState<FlowTextOption>();
   //クエリパラメーターからoptionを取得
   const searchParams = useSearchParams();
   const fontSize = parseInt(searchParams.get("fontSize") ?? "100");
   const fontColors = searchParams.get("fontColors")?.split(",");
-  const flowAreas = searchParams.get("flowAreas")?.split(",");
-  const [text, setText] = useState<string>("初期テキスト");
-  const [key, setKey] = useState<number>(0);
+  const flowAreas = searchParams.get("flowAreas")?.split(",").map(parseFloat);
+  const windowHight = parseInt(searchParams.get("windowHight") ?? "1000") - 50;
+  const windowWidth = parseInt(searchParams.get("windowWidth") ?? "1000");
+  const testMode = searchParams.get("testMode") === "true";
+  const [flowTexts, setFlowTexts] = useState<FlowText[]>([]);
+  const getRandomArea = () => {
+    const unusedLines = flowAreas.filter(
+      (area) =>
+        flowTexts.filter((flowText) => flowText.line === area).length === 0
+    );
+    if (unusedLines.length === 0)
+      return flowAreas[Math.floor(Math.random() * flowAreas.length)];
+    return unusedLines[Math.floor(Math.random() * (unusedLines.length + 1))];
+  };
+  const genFlowText = (text: string, lineIndex?: number) => {
+    const flowText = {
+      id: crypto.randomUUID(),
+      text,
+      color:
+        fontColors[
+          (flowTexts.length + Math.floor(Math.random() * 100)) %
+            fontColors.length
+        ],
+      line: lineIndex ? flowAreas[lineIndex] : getRandomArea(),
+    };
+    return flowText;
+  };
   useEffect(() => {
-    const timer = setInterval(() => {
-      // ここで新しいテキストを設定
-      setText("新しいテキスト " + new Date().toLocaleTimeString());
-      setKey((prev) => prev + 1); // キーを更新してアニメーションをリセット
-    }, 10000); // 10秒ごとにテキスト更新
-
-    return () => clearInterval(timer);
+    if (flowTexts.length !== 0 || !testMode) return;
+    let testFlow = [];
+    for (let i = 0; i < flowAreas.length; i++) {
+      testFlow.push(genFlowText("TEST" + i, i));
+    }
+    setFlowTexts(testFlow);
   }, []);
-  // 3秒後に画面を戻す
+
+  // testModeでは10秒後に画面を戻す
   useEffect(() => {
+    if (!testMode) return;
     setTimeout(() => {
       window.electron.backToSetting();
     }, 10000);
   }, []);
   return (
-    <div
-      key={key} // キーを更新することでアニメーションをリセット
+    <div // キーを更新することでアニメーションをリセット
       style={{
         position: "relative",
         overflow: "hidden",
         whiteSpace: "nowrap",
       }}
-      className="bg-green-200 w-full h-full"
+      className="w-full h-full"
     >
-      <div
-        className="bg-green-200"
-        style={{ fontSize: `${fontSize}px`, color: "green" }}
-      >
-        HELLO
-      </div>
-      <div
-        style={{
-          position: "absolute",
-          left: "100%",
-          top: "20%",
-          animation: "flow-text 10s linear",
-          fontSize: `${fontSize}px`,
-          color: "red",
-          fontWeight: "bold",
-        }}
-      >
-        {text}
-      </div>
-      <style>{`
-        @keyframes flow-text {
+      <div style={{ height: `${windowHight}px` }}></div>
+      {flowTexts.map((flowText) => (
+        <div key={flowText.id}>
+          <div
+            style={{
+              position: "absolute",
+              left: "100%",
+              top: `${flowText.line}%`,
+              animation: `flow-text-${flowText.id} 10s linear`,
+              fontSize: `${fontSize}px`,
+              color: flowText.color,
+              fontWeight: "bold",
+            }}
+          >
+            {windowHight + flowText.text}
+          </div>
+          <style>{`
+        @keyframes flow-text-${flowText.id} {
           from {
             transform: translateX(0);
           }
           to {
-            transform: translateX(-200%);
+            transform: translateX(-${windowWidth * 2}px);
           }
         }
       `}</style>
+        </div>
+      ))}
     </div>
   );
 };

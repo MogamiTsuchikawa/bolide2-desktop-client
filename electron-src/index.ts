@@ -65,6 +65,9 @@ const openFlowTextWindow = (option: FlowTextOption) => {
     fontSize: option.fontSize.toString(),
     fontColors: option.fontColors.join(","),
     flowAreas: option.flowAreas.join(","),
+    testMode: option.testMode ? "true" : "false",
+    windowHight: screen.getPrimaryDisplay().workAreaSize.height.toString(),
+    windowWidth: screen.getPrimaryDisplay().workAreaSize.width.toString(),
   }).toString();
   const url = isDev
     ? "http://localhost:8000/flow-text?" + queryStr

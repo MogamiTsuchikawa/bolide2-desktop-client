@@ -23,9 +23,10 @@ const SettingPage = () => {
   };
   const onClickStart = () => {
     window.electron.startFlowText({
-      fontSize: 300,
-      fontColors: ["red", "blue"],
-      flowAreas: [1, 2, 3, 4, 5],
+      fontSize: 100,
+      fontColors: ["red", "blue", "green", "yellow", "purple", "pink"],
+      flowAreas: [0, 10, 20, 30, 40, 50, 60, 70, 80],
+      testMode: true,
     });
   };
   return (
