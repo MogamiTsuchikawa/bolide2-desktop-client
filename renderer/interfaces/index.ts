@@ -30,4 +30,5 @@ export type FlowTextOption = {
   fontColors: string[];
   flowAreas: number[];
   testMode: boolean;
+  wsUrl?: string;
 };

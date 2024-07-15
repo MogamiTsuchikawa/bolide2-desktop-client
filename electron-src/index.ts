@@ -44,8 +44,8 @@ app.on("ready", async () => {
 
 const openFlowTextWindow = (option: FlowTextOption) => {
   settingWindow?.hide();
-  if (!option.testMode) {
-    webSocket = new WebSocket("wss://bolide.digicre.net/api/v1/room/test");
+  if (option.wsUrl) {
+    webSocket = new WebSocket(option.wsUrl);
     webSocket.onopen = () => {
       console.log("WebSocket connected");
       setInterval(() => {
@@ -63,6 +63,8 @@ const openFlowTextWindow = (option: FlowTextOption) => {
     };
     webSocket.onclose = () => {
       console.log("WebSocket disconnected");
+      flowTextWindow?.close();
+      settingWindow?.show();
     };
   }
   flowTextWindow = new BrowserWindow({

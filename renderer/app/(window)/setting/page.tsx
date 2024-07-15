@@ -3,6 +3,7 @@ import { useState } from "react";
 import WindowComponent from "../../../components/window/window";
 import AppInfo from "../../../components/setting/app-info";
 import Connection from "../../../components/setting/connection";
+import { FlowTextOption } from "../../../interfaces";
 
 const tabList: {
   name: "room" | "text-position-speed" | "text-color-size" | "app-info";
@@ -21,13 +22,14 @@ const SettingPage = () => {
   const onClickExit = () => {
     window.electron.exitApp();
   };
+  const [option, setOption] = useState<FlowTextOption>({
+    fontSize: 100,
+    fontColors: ["red", "blue", "green", "yellow", "purple", "pink"],
+    flowAreas: [0, 10, 20, 30, 40, 50, 60, 70, 80],
+    testMode: false,
+  });
   const onClickStart = () => {
-    window.electron.startFlowText({
-      fontSize: 100,
-      fontColors: ["red", "blue", "green", "yellow", "purple", "pink"],
-      flowAreas: [0, 10, 20, 30, 40, 50, 60, 70, 80],
-      testMode: false,
-    });
+    window.electron.startFlowText(option);
   };
   return (
     <WindowComponent title="Setting" onClose={onClickExit}>
@@ -50,18 +52,17 @@ const SettingPage = () => {
           hidden={selectedTab !== "room"}
           className="min-h-[500px]"
         >
-          <Connection />
+          <Connection
+            onChange={(url) => setOption({ ...option, wsUrl: url })}
+            url={option.wsUrl ?? ""}
+          />
         </article>
         <article
           role="tabpanel"
           hidden={selectedTab !== "text-position-speed"}
           className="min-h-[500px]"
         >
-          <h3>More...</h3>
-          <p>This tab contains a GroupBox</p>
-          <fieldset>
-            <legend>Today's mood</legend>
-          </fieldset>
+          <p>speedの項目の変更は現バージョンではサポートされていません</p>
         </article>
         <article
           role="tabpanel"
