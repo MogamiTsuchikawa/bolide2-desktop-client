@@ -4,9 +4,13 @@ import axios from "axios";
 export const useAppVersion = () => {
   const [version, setVersion] = useState<string | undefined>();
   const [latestVersion, setLatestVersion] = useState<string | undefined>();
-  const checkRequiredUpdate = useCallback((currentVersion, latestVersion) => {
+  const [requiredUpdateStatus, setRequiredUpdateStatus] = useState<
+    "loading" | "required" | "not-required" | "available" | "unkown"
+  >("loading");
+  const checkRequiredUpdate = useCallback(
+    (currentVersion, latestVersion): "loading" | "required" | "not-required" | "available" | "unkown" => {
     if (!version || !latestVersion) return "loading";
-    if (currentVersion === latestVersion) return "not-required";
+    if (currentVersion == latestVersion) return "not-required";
     if (
       parseInt(currentVersion.split(".")[0]) <
       parseInt(latestVersion.split(".")[0])
@@ -22,7 +26,7 @@ export const useAppVersion = () => {
       parseInt(latestVersion.split(".")[2]);
     if (versionNumber < latestVersionNumber) return "available";
     return "unkown";
-  }, []);
+  }, [version]);
   useEffect(() => {
     (async () => {
       const currentVersionInfo = await axios.get<{ version: string }>(
@@ -37,10 +41,13 @@ export const useAppVersion = () => {
       setLatestVersion(latestVersionInfo.data.version);
     })();
   }, []);
+  useEffect(() => {
+    setRequiredUpdateStatus(checkRequiredUpdate(version, latestVersion));
+  }, [version, latestVersion]);
 
   return {
     version,
     latestVersion,
-    requiredUpdateStatus: checkRequiredUpdate(version, latestVersion),
+    requiredUpdateStatus,
   };
 };
